@@ -106,7 +106,7 @@ class VapoursynthPluginImporter(Finder):
             return None
 
         fullname = fullname[4:]
-            
+        
         if fullname in self.namespaces:
             return self.loader
         return None

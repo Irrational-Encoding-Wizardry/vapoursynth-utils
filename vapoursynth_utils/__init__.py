@@ -36,23 +36,11 @@ def get_autoload_path(name):
     )
 
 
-def get_local_plugin_names():
-    for dir in os.listdir(get_autoload_path('vapoursynth-plugins')):
-        if not os.path.isdir(dir):
-            continue
-        yield os.path.split(dir)[1]
-
-
 def perform_autoload(core):
     """
     This function actually performs the auto-load
     """
     for file in glob.glob(os.path.join(get_autoload_path('vapoursynth-plugins'), f'**/{get_dll_extension()}')):
-        core.std.LoadPlugin(file)
-
-
-def load_local_plugin(name):
-    for file in glob.glob(os.path.join(get_autoload_path('vapoursynth-plugins'), name, get_dll_extension())):
         core.std.LoadPlugin(file)
 
 
@@ -69,7 +57,9 @@ def autoload(core=None):
 
 def register_path():
     sys.path.insert(1, '$VAPOURSYNTH-SCRIPTS$2')
-    for dir in os.listdir(get_autoload_path('vapoursynth-scripts')):
+    path = get_autoload_path('vapoursynth-plugins')
+    for dir in os.listdir(path):
+        dir = os.path.join(path, dir)
         if not os.path.isdir(dir):
             continue
         sys.path.insert(1, dir)
@@ -79,6 +69,20 @@ def register_path():
 def initialize():
     register_path()
     autoload()
+
+
+def get_local_plugin_names():
+    path = get_autoload_path('vapoursynth-plugins')
+    for dir in os.listdir(path):
+        dir = os.path.join(path, dir)
+        if not os.path.isdir(dir):
+            continue
+        yield os.path.split(dir)[1]
+
+
+def load_local_plugin(name):
+    for file in glob.glob(os.path.join(get_autoload_path('vapoursynth-plugins'), name, get_dll_extension())):
+        _get_core().std.LoadPlugin(file)
 
 
 if vs._using_vsscript:
