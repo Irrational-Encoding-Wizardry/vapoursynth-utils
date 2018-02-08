@@ -50,7 +50,7 @@ def autoload(core=None):
     if core in _KNOWN_CORES:
         return
     try:
-        perform_autoload()
+        perform_autoload(core)
     finally:
         _KNOWN_CORES.add(core)
 
