@@ -18,7 +18,7 @@ _get_core = vs.get_core
 _KNOWN_CORES = weakref.WeakSet()
 
 
-__all__ = ["autoload", "initialize"]
+__all__ = ["autoload", "initialize", "get_local_plugin_names", "load_local_plugin"]
 
 
 def get_dll_extension():
@@ -36,11 +36,23 @@ def get_autoload_path(name):
     )
 
 
+def get_local_plugin_names():
+    for dir in os.listdir(get_autoload_path('vapoursynth-plugins')):
+        if not os.path.isdir(dir):
+            continue
+        yield os.path.split(dir)[1]
+
+
 def perform_autoload(core):
     """
     This function actually performs the auto-load
     """
     for file in glob.glob(os.path.join(get_autoload_path('vapoursynth-plugins'), f'**/{get_dll_extension()}')):
+        core.std.LoadPlugin(file)
+
+
+def load_local_plugin(name):
+    for file in glob.glob(os.path.join(get_autoload_path('vapoursynth-plugins'), name, get_dll_extension())):
         core.std.LoadPlugin(file)
 
 
@@ -57,10 +69,9 @@ def autoload(core=None):
 
 def register_path():
     sys.path.insert(1, '$VAPOURSYNTH-SCRIPTS$2')
-    for dir in os.path.listdir(get_autoload_path('vapoursynth-scripts')):
+    for dir in os.listdir(get_autoload_path('vapoursynth-scripts')):
         if not os.path.isdir(dir):
             continue
-        if dir in sys.path
         sys.path.insert(1, dir)
     sys.path.insert(1, '$VAPOURSYNTH-SCRIPTS$1')
 
